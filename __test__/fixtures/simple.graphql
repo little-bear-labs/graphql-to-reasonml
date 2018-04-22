@@ -1,0 +1,21 @@
+enum User {
+  SuperUser
+  Administrator
+  Customer
+}
+
+enum Gender {
+  Male
+  Female
+  NonBinary
+}
+
+type User {
+  name: String!
+  email: String!
+  gender: Gender
+}
+
+type Query {
+  user: User
+}
