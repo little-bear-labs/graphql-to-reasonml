@@ -1,9 +1,6 @@
 const constants = require('../constants');
+const { lowerFirstChar } = require('../util');
 const KindType = 'Type';
-
-function lowerFirstChar(input) {
-  return input[0].toLowerCase() + input.slice(1);
-}
 
 const typeTransformers = {
   [constants.PolymorphicVariant]: transformPolymorphicVariant,
@@ -12,7 +9,6 @@ const typeTransformers = {
 };
 
 function transformPolymorphicVariant(node) {
-  const name = lowerFirstChar(node.name);
   const content =
     '[' +
     node.variants
@@ -28,8 +24,9 @@ function transformPolymorphicVariant(node) {
 
   return {
     kind: KindType,
-    name,
+    name: node.name,
     content,
+    comment: node.comment,
   };
 }
 
@@ -65,7 +62,13 @@ function resolveProperty(node, namedNodes) {
 }
 
 function resolveMethod(node, externalTypes, namedNodes) {
-  const type = resolveProperty(node.returnType, namedNodes);
+  const definedType = resolveProperty(node.returnType, namedNodes);
+  /* super hacky rework the string back into it's original form for a lookup */
+  const uppercased = definedType[0].toUpperCase() + definedType.slice(1);
+  const nodeType = namedNodes[uppercased];
+  const type =
+    nodeType && nodeType.internalType ? nodeType.internalType : definedType;
+
   const args = node.arguments
     .map(argument => {
       const typeSignature = resolveProperty(argument.type, namedNodes);
@@ -103,6 +106,7 @@ function transformObject(node, externalTypes, namedNodes) {
     kind: KindType,
     name: lowerFirstChar(node.name),
     content: `{ ${flattenFields(node, externalTypes, namedNodes)} }`,
+    comment: node.comment,
   };
 }
 

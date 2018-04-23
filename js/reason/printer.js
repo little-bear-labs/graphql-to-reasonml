@@ -1,10 +1,13 @@
 const refmt = require('reason');
+const { lowerFirstChar } = require('../util');
 
 function printer(nodes) {
   const raw = `
     type ${nodes
-      .map(({ name, content }) => {
-        return `${name} = ${content}`;
+      .map(({ name, content, comment }) => {
+        return `
+        ${comment ? `/* ${comment} */` : ''}
+        ${lowerFirstChar(name)} = ${content}`;
       })
       .join(' and ')}`;
 

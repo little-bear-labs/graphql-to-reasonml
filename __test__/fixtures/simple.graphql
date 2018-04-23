@@ -4,11 +4,12 @@ enum UserTypes {
   Customer
 }
 
+"""
+Gender Constants
+"""
 enum Gender {
-  """
-  Men
-  """
   Male
+
   """
   Women
   """
