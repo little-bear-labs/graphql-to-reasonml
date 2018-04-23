@@ -29,7 +29,7 @@ function transformPolymorphicVariant(node) {
   };
 }
 
-function unwrapNamedNode(node, namedNodes) {
+function unwrapNamedNode(node) {
   // return a reference to the type we will create elsewhere.
   return lowerFirstChar(node.name);
 }
@@ -131,7 +131,6 @@ function transformer(transformed) {
   return transformed.map(node => {
     if (!typeTransformers[node.kind]) {
       throw new Error(`Printer not implemented for: ${node.kind}`);
-      return null;
     }
     return typeTransformers[node.kind](node, internalTypes, namedNodes);
   });

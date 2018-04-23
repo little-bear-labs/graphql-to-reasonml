@@ -1,4 +1,4 @@
-const { getLocation, parse, Source } = require('graphql/language');
+const { getLocation, parse } = require('graphql/language');
 const constants = require('./constants');
 
 const RecordDirective = 'bsRecord';

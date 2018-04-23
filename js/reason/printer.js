@@ -34,10 +34,10 @@ function printer(nodes) {
     const ast = refmt.parseRE(raw);
     return refmt.printRE(ast);
   } catch (err) {
+    // eslint-disable-next-line
     console.error(
-      'Parsing ReasonML syntax failed... This should never happen.',
+      'Parsing ReasonML syntax failed... This should never happen.' + err.stack,
     );
-    console.log(err);
     throw err;
   }
 }

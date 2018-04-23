@@ -5,7 +5,7 @@ const reasonTransformer = require('../js/reason/transformer');
 const reasonPrinter = require('../js/reason/printer');
 
 describe('transformer', () => {
-  const fixtures = fs
+  fs
     .readdirSync(__dirname + '/fixtures')
     .filter(value => {
       return /\.graphql$/.test(value);
@@ -28,7 +28,6 @@ describe('transformer', () => {
           const transformed = subject(source);
           const reason = reasonTransformer(transformed);
           const printed = reasonPrinter(reason);
-          console.log(printed);
           expect(printed).toEqual(expected);
         });
       });
