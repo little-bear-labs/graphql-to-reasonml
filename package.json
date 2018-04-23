@@ -9,9 +9,15 @@
   "keywords": [
     "BuckleScript"
   ],
+  "jest": {
+    "testMatch": [
+      "**/__test__/**/*_test*.js"
+    ]
+  },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@glennsl/bs-jest": "^0.4.2",
     "bs-platform": "^3.0.0",
     "jest": "^22.4.3"
   },

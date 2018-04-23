@@ -17,7 +17,7 @@ describe('transformer', () => {
       describe(fixture, () => {
         it('should match re fixture', () => {
           const expected = fs.readFileSync(
-            __dirname + `/fixtures/${fixture}.rei`,
+            __dirname + `/fixtures/${fixture}.re`,
             'utf8',
           );
           const raw = fs.readFileSync(

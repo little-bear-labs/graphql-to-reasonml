@@ -1,6 +1,5 @@
 const constants = require('../constants');
 const { lowerFirstChar } = require('../util');
-const KindType = 'Type';
 
 const typeTransformers = {
   [constants.PolymorphicVariant]: transformPolymorphicVariant,
@@ -17,13 +16,13 @@ function transformPolymorphicVariant(node) {
         if (comment) {
           str += ` /* ${comment} */ \n`;
         }
-        return str + '`' + value;
+        return str + `[@bs.as "${value}"] ` + '`' + value;
       })
       .join('|') +
     ']';
 
   return {
-    kind: KindType,
+    kind: constants.KindVariant,
     name: node.name,
     content,
     comment: node.comment,
@@ -58,7 +57,8 @@ function resolveInputFieldType(node, namedNodes) {
 function resolveProperty(node, namedNodes) {
   const reasonType = resolveInputFieldType(node, namedNodes);
   const concreteType = node.list ? `array(${reasonType})` : reasonType;
-  return node.nullable ? `option(${concreteType})` : concreteType;
+  // TODO: Use option somehow instead of nullable
+  return node.nullable ? `Js.nullable(${concreteType})` : concreteType;
 }
 
 function resolveMethod(node, externalTypes, namedNodes) {
@@ -85,7 +85,7 @@ function resolveMethod(node, externalTypes, namedNodes) {
 function resolveInputField(node, externalTypes, namedNodes) {
   return `
     ${node.comment ? `/* ${node.comment} */` : ''}
-    ${node.name}: ${
+    "${node.name}": ${
     node.kind === constants.ObjectProperty
       ? resolveProperty(node, namedNodes)
       : resolveMethod(node, externalTypes, namedNodes)
@@ -103,9 +103,9 @@ function flattenFields(node, externalTypes, namedNodes) {
 
 function transformObject(node, externalTypes, namedNodes) {
   return {
-    kind: KindType,
+    kind: constants.KindType,
     name: lowerFirstChar(node.name),
-    content: `{ ${flattenFields(node, externalTypes, namedNodes)} }`,
+    content: `{ . ${flattenFields(node, externalTypes, namedNodes)} }`,
     comment: node.comment,
   };
 }

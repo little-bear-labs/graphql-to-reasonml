@@ -5,6 +5,8 @@ const Object = 'Object';
 const InputObject = 'InputObject';
 const ObjectProperty = 'ObjectProperty';
 const ObjectMethod = 'ObjectMethod';
+const KindType = 'Type';
+const KindVariant = 'Variant';
 
 module.exports = {
   PolymorphicVariant,
@@ -13,4 +15,6 @@ module.exports = {
   InputObject,
   ObjectProperty,
   ObjectMethod,
+  KindType,
+  KindVariant,
 };

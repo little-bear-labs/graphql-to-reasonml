@@ -8,7 +8,8 @@
     },
     {
       "dir": "__test__",
-      "subdirs": true
+      "subdirs": true,
+      "type": "dev"
     }
   ],
   "package-specs": {
@@ -17,8 +18,9 @@
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
-    // add your bs-dependencies here
+
   ],
+  "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "warnings": {
     "error": "+101"
   },

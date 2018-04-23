@@ -1,8 +1,9 @@
 const refmt = require('reason');
 const { lowerFirstChar } = require('../util');
+const constants = require('../constants');
 
-function printer(nodes) {
-  const raw = `
+function printTypes(nodes) {
+  return `
     type ${nodes
       .map(({ name, content, comment }) => {
         return `
@@ -11,14 +12,32 @@ function printer(nodes) {
       })
       .join(' and ')}`;
 
+}
+
+function printVariants(nodes) {
+  return nodes.reduce((sum, node) => {
+    return sum + `
+      ${node.comment ? `/* ${node.comment} */` : ''}
+      [@bs.deriving jsConverter]
+      type ${lowerFirstChar(node.name)} = ${node.content};
+    `;
+  }, '');
+}
+
+function printer(nodes) {
+  const typesOutput = printTypes(nodes.filter(({kind}) => kind === constants.KindType))
+  const variantsOutput = printVariants(nodes.filter(({kind}) => kind === constants.KindVariant))
+
+  const raw = `${variantsOutput} ${typesOutput}`;
+
   try {
-    const ast = refmt.parseREI(raw);
-    return refmt.printREI(ast);
+    const ast = refmt.parseRE(raw);
+    return refmt.printRE(ast);
   } catch (err) {
     console.error(
       'Parsing ReasonML syntax failed... This should never happen.',
     );
-    console.log(raw);
+    console.log(err);
     throw err;
   }
 }
