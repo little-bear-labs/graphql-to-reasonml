@@ -1,10 +1,16 @@
 {
   "name": "graphql-to-reasonml",
   "version": "0.1.0",
-  "sources": {
-    "dir": "reason",
-    "subdirs": true
-  },
+  "sources": [
+    {
+      "dir": "reason",
+      "subdirs": true
+    },
+    {
+      "dir": "__test__",
+      "subdirs": true
+    }
+  ],
   "package-specs": {
     "module": "commonjs",
     "in-source": true

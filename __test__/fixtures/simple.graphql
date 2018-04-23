@@ -9,10 +9,6 @@ Gender Constants
 """
 enum Gender {
   Male
-
-  """
-  Women
-  """
   Female
   NonBinary
 }
