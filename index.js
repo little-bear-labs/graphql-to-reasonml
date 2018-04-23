@@ -1,1 +1,0 @@
-const graphql = require('graphql');

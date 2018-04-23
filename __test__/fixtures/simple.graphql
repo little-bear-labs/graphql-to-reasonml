@@ -1,19 +1,50 @@
-enum User {
+enum UserTypes {
   SuperUser
   Administrator
   Customer
 }
 
 enum Gender {
+  """
+  Men
+  """
   Male
+  """
+  Women
+  """
   Female
   NonBinary
 }
 
-type User {
+input Wrapper {
+  foo: String
+}
+
+input GenderInput {
+  """
+  the check
+  """
+  check: Boolean!
+  another: ID
+  listOfStrings: [String]!
+  nullableListOfStrings: [String]
+  wrapper: Wrapper!
+  gender: Gender
+}
+
+type User @bsRecord(type: "User.t") {
   name: String!
   email: String!
   gender: Gender
+  listNullable: [String]
+  list: [String]!
+  getGender(
+    """
+    Do the check?
+    """
+    check: GenderInput
+  ): Gender!
+  self(check: Boolean!): User!
 }
 
 type Query {
