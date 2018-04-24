@@ -1,8 +1,8 @@
 const fs = require('fs');
 const graphqlLang = require('graphql/language');
-const subject = require('../js/transformer');
-const reasonTransformer = require('../js/reason/transformer');
-const reasonPrinter = require('../js/reason/printer');
+const subject = require('../compiler/transformer');
+const reasonTransformer = require('../compiler/reason/transformer');
+const reasonPrinter = require('../compiler/reason/printer');
 
 describe('transformer', () => {
   fs
