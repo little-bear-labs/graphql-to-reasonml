@@ -36,7 +36,8 @@ function printer(nodes) {
   } catch (err) {
     // eslint-disable-next-line
     console.error(
-      'Parsing ReasonML syntax failed... This should never happen.' + err.stack,
+      'Parsing ReasonML syntax failed... This should never happen.',
+      err,
     );
     throw err;
   }

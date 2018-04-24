@@ -18,7 +18,7 @@ describe("construct types", () => {
         open Simple;
         let genderInput = getGenderInput();
         let gender = switch(toOption(genderInput##gender)) {
-        | Some(gender) => Simple.genderFromJs(Js.String.make(gender))
+        | Some(gender) => Simple.genderFromJs(gender)
         | None => None
         };
         expect(genderInput##check) |> toBe(true);
