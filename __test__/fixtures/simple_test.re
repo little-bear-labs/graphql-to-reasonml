@@ -6,7 +6,7 @@ open Jest;
 
 type ctxType = {foo: string};
 
-let myUser: Simple.user(ctxType) = {
+let user: Simple.user(ctxType) = {
   "name": (user, args, ctx) => "foo",
   "email": (user, args, ctx) => "foo",
   "gender": (user, args, ctx) => Js.Nullable.return("foo"),
@@ -20,6 +20,14 @@ let myUser: Simple.user(ctxType) = {
   },
   "self": (user, args, ctx) => User.Foo,
 };
+
+type none;
+
+let query: Simple.query(none, ctxType) = {
+  "user": (_, args, ctx) => Js.Nullable.return(User.Foo),
+};
+
+let resolvers = {"User": user, "Query": query};
 
 describe("construct types", () => {
   open Expect;

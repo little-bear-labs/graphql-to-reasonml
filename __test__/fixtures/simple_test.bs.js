@@ -6,7 +6,7 @@ var Gen = require("./gen");
 var Simple = require("./simple.bs.js");
 var Js_primitive = require("bs-platform/lib/js/js_primitive.js");
 
-var myUser = {
+var user = {
   name: (function (_, _$1, _$2) {
       return "foo";
     }),
@@ -38,6 +38,17 @@ var myUser = {
     })
 };
 
+var query = {
+  user: (function (_, _$1, _$2) {
+      return /* Foo */0;
+    })
+};
+
+var resolvers = {
+  User: user,
+  Query: query
+};
+
 describe("construct types", (function () {
         describe("Wrapper", (function () {
                 return Jest.test("object construction", (function () {
@@ -58,5 +69,7 @@ describe("construct types", (function () {
         return /* () */0;
       }));
 
-exports.myUser = myUser;
+exports.user = user;
+exports.query = query;
+exports.resolvers = resolvers;
 /*  Not a pure module */
