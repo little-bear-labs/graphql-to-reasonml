@@ -53,9 +53,7 @@ describe("construct types", (function () {
                               return Jest.Expect[/* toEqual */12](/* Some */[/* Male */858744557], Jest.Expect[/* expect */0](gender));
                             }));
               }));
-        return Jest.test("implement types", (function () {
-                      return Jest.Expect[/* toBe */2](1, Jest.Expect[/* expect */0](1));
-                    }));
+        return /* () */0;
       }));
 
 exports.myUser = myUser;

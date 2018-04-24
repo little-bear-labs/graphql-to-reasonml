@@ -42,8 +42,4 @@ describe("construct types", () => {
         expect(gender) |> toEqual(Some(`Male))
       });
     });
-
-    test("implement types", () => {
-      expect(1) |> toBe(1);
-    });
   });
