@@ -6,6 +6,36 @@ var Gen = require("./gen");
 var Simple = require("./simple.bs.js");
 var Js_primitive = require("bs-platform/lib/js/js_primitive.js");
 
+var myUser = {
+  name: (function () {
+      return "foo";
+    }),
+  email: (function () {
+      return "foo";
+    }),
+  gender: (function () {
+      return "foo";
+    }),
+  listNullable: (function () {
+      return /* :: */[
+              "foo",
+              /* [] */0
+            ];
+    }),
+  list: (function () {
+      return /* :: */[
+              "foo",
+              /* [] */0
+            ];
+    }),
+  getGender: (function () {
+      return "foo";
+    }),
+  self: (function () {
+      return /* Foo */0;
+    })
+};
+
 describe("construct types", (function () {
         describe("Wrapper", (function () {
                 return Jest.test("object construction", (function () {
@@ -23,7 +53,10 @@ describe("construct types", (function () {
                               return Jest.Expect[/* toEqual */12](/* Some */[/* Male */858744557], Jest.Expect[/* expect */0](gender));
                             }));
               }));
-        return /* () */0;
+        return Jest.test("implement types", (function () {
+                      return Jest.Expect[/* toBe */2](1, Jest.Expect[/* expect */0](1));
+                    }));
       }));
 
+exports.myUser = myUser;
 /*  Not a pure module */

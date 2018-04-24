@@ -19,8 +19,8 @@ and genderInput = {
   /* the check */
   "check": bool,
   "another": Js.nullable(string),
-  "listOfStrings": array(string),
-  "nullableListOfStrings": Js.nullable(array(string)),
+  "listOfStrings": list(string),
+  "nullableListOfStrings": Js.nullable(list(string)),
   "wrapper": wrapper,
   "gender": Js.nullable(string),
 }
@@ -29,11 +29,11 @@ and user = {
   "name": unit => string,
   "email": unit => string,
   "gender": unit => Js.nullable(string),
-  "listNullable": unit => Js.nullable(array(string)),
-  "list": unit => array(string),
+  "listNullable": unit => Js.nullable(list(string)),
+  "list": unit => list(string),
   "getGender":
     /* Do the check? */
-    (~check: Js.nullable(genderInput)=?) =>
+    (~check: Js.nullable(genderInput)) =>
     string,
   "self": (~check: bool) => User.t,
 }

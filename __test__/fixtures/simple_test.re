@@ -3,6 +3,19 @@ open Jest;
 [@bs.module "./gen"] external getWrapper : unit => Simple.wrapper = "";
 [@bs.module "./gen"] external getGenderInput: unit => Simple.genderInput = "";
 
+let myUser: Simple.user = {
+  "name": () => "foo",
+  "email": () => "foo",
+  "gender": () => Js.Nullable.return("foo"),
+  "listNullable": () => Js.Nullable.return(["foo"]),
+  "list": () => ["foo"],
+  /* "getGender": (~check: Js.nullable(Simple.genderInput) = ?) => "foo", */
+  "getGender":
+    /* Do the check? */
+    (~check) => "foo",
+  "self": (~check) => User.Foo,
+};
+
 describe("construct types", () => {
   open Expect;
     describe("Wrapper", () =>
@@ -25,5 +38,9 @@ describe("construct types", () => {
         expect(toOption(genderInput##wrapper##foo)) |> toEqual(Some("yup"));
         expect(gender) |> toEqual(Some(`Male))
       });
+    });
+
+    test("implement types", () => {
+      expect(1) |> toBe(1);
     });
   });

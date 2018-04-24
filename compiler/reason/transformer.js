@@ -61,7 +61,8 @@ function resolveInputFieldType(node, namedNodes) {
 
 function resolveProperty(node, namedNodes) {
   const reasonType = resolveInputFieldType(node, namedNodes);
-  const concreteType = node.list ? `array(${reasonType})` : reasonType;
+  // XXX: Lists are easier to use so we chose them over an array.
+  const concreteType = node.list ? `list(${reasonType})` : reasonType;
   // TODO: Use option somehow instead of nullable
   return node.nullable ? `Js.nullable(${concreteType})` : concreteType;
 }
@@ -74,10 +75,10 @@ function resolveArguments(node, namedNodes) {
   const args = node.arguments
     .map(argument => {
       const typeSignature = resolveProperty(argument.type, namedNodes);
-      const optional = argument.type.nullable ? ' = ?' : '';
+      // Even if argument is optional reasonml must handle it.
       return `${argument.comment ? `/* ${argument.comment} */` : ''} ~${
         argument.name
-      }:${typeSignature}${optional}`;
+      }:${typeSignature}`;
     })
     .join(', ');
 
