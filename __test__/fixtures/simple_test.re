@@ -13,7 +13,6 @@ let myUser: Simple.user(ctxType) = {
   "gender": ctx => Js.Nullable.return("foo"),
   "listNullable": ctx => Js.Nullable.return(["foo"]),
   "list": ctx => ["foo"],
-  /* "getGender": (~check: Js.nullable(Simple.genderInput) = ?) => "foo", */
   "getGender":
     /* Do the check? */
     (~check, ctx) => "foo",
