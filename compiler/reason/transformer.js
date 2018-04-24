@@ -39,9 +39,9 @@ function unwrapNamedNode(node, namedNodes) {
   }
 
   const nodeType = namedNodes[node.name];
-  return nodeType && nodeType.internalType ?
-    nodeType.internalType :
-    lowerFirstChar(node.name);
+  return nodeType && nodeType.internalType
+    ? nodeType.internalType
+    : lowerFirstChar(node.name);
 }
 
 function resolveInputFieldType(node, namedNodes) {
@@ -67,7 +67,6 @@ function resolveInputFieldType(node, namedNodes) {
 function resolveProperty(node, namedNodes) {
   const reasonType = resolveInputFieldType(node, namedNodes);
 
-
   // XXX: Lists are easier to use so we chose them over an array.
   const concreteType = node.list ? `list(${reasonType})` : reasonType;
   // TODO: Use option somehow instead of nullable
@@ -75,45 +74,57 @@ function resolveProperty(node, namedNodes) {
 }
 
 function resolveArguments(node, namedNodes) {
-  const args = (node.arguments || [])
+  const typeArgumentContent = (node.arguments || [])
     .map(argument => {
       const typeSignature = resolveProperty(argument.type, namedNodes);
       // Even if argument is optional reasonml must handle it.
-      return `${argument.comment ? `/* ${argument.comment} */` : ''} ~${
+      return `${argument.comment ? `/* ${argument.comment} */` : ''} "${
         argument.name
-      }:${typeSignature}`;
+      }": ${typeSignature}`;
     })
+    .join(', ');
 
-  args.push(ContextVariable);
+  const argumentType = {
+    kind: constants.KindType,
+    name: `__${node.name}Args`,
+    content: `{ . ${typeArgumentContent} }`,
+    comment: `Arguments for ${node.name}`,
+  };
 
-  return `(${args.join(', ')})`;
+  return {
+    content: `(${[argumentType.name, ContextVariable].join(', ')})`,
+    type: argumentType,
+  };
 }
 
 function resolveMethod(node, externalTypes, namedNodes) {
-  const type = node.returnType ?
-    resolveProperty(node.returnType, namedNodes) :
-    resolveProperty(node, namedNodes);
+  const type = node.returnType
+    ? resolveProperty(node.returnType, namedNodes)
+    : resolveProperty(node, namedNodes);
 
-  return `${resolveArguments(node, namedNodes)} => ${type}`;
+  const { content, type: argumentType } = resolveArguments(node, namedNodes);
+  return {
+    content: `${content} => ${type}`,
+    type: argumentType,
+  };
 }
 
 function resolveInputField(node, externalTypes, namedNodes) {
   return `
     ${node.comment ? `/* ${node.comment} */` : ''}
-    "${node.name}": ${
-    node.kind === constants.ObjectProperty
-      ? resolveProperty(node, namedNodes)
-      : resolveMethod(node, externalTypes, namedNodes)
-  }
+    "${node.name}": ${resolveProperty(node, namedNodes)}
   `;
 }
 
 function resolveObjectField(node, externalTypes, namedNodes) {
-  return `
-    ${node.comment ? `/* ${node.comment} */` : ''}
-    "${node.name}": ${resolveMethod(node, externalTypes, namedNodes)
-  }
-  `;
+  const { content, type } = resolveMethod(node, externalTypes, namedNodes);
+  return {
+    content: `
+      ${node.comment ? `/* ${node.comment} */` : ''}
+      "${node.name}": ${content}
+    `,
+    type,
+  };
 }
 
 function flattenInputFields(node, externalTypes, namedNodes) {
@@ -125,11 +136,21 @@ function flattenInputFields(node, externalTypes, namedNodes) {
 }
 
 function flattenObjectFields(node, externalTypes, namedNodes) {
-  return node.fields
-    .map(node => {
-      return resolveObjectField(node, externalTypes, namedNodes);
-    })
-    .join(', ');
+  const { contents, types } = node.fields.reduce((sum, node) => {
+    const { content, type } = resolveObjectField(node, externalTypes, namedNodes);
+    sum.contents.push(content);
+    sum.types.push(type);
+    return sum;
+  }, {
+    contents: [],
+    types: [],
+  })
+
+  return {
+    types,
+    content: contents.join(', ')
+  };
+
 }
 
 function transformInputObject(node, externalTypes, namedNodes) {
@@ -142,13 +163,21 @@ function transformInputObject(node, externalTypes, namedNodes) {
 }
 
 function transformObject(node, externalTypes, namedNodes) {
-  return {
-    kind: constants.KindType,
-    name: lowerFirstChar(node.name),
-    content: `{ . ${flattenObjectFields(node, externalTypes, namedNodes)} }`,
-    comment: node.comment,
-    args: [ContextVariable],
-  };
+  const { types, content } = flattenObjectFields(
+    node,
+    externalTypes,
+    namedNodes,
+  );
+  return [
+    {
+      kind: constants.KindType,
+      name: lowerFirstChar(node.name),
+      content: `{ . ${content} }`,
+      comment: node.comment,
+      args: [ContextVariable],
+    },
+    ...types,
+  ];
 }
 
 function transformer(transformed) {
@@ -169,12 +198,15 @@ function transformer(transformed) {
     {},
   );
 
-  return transformed.map(node => {
+  return transformed.reduce((sum, node) => {
     if (!typeTransformers[node.kind]) {
       throw new Error(`Printer not implemented for: ${node.kind}`);
     }
-    return typeTransformers[node.kind](node, internalTypes, namedNodes);
-  });
+
+    return [...sum].concat(
+      typeTransformers[node.kind](node, internalTypes, namedNodes),
+    );
+  }, []);
 }
 
 module.exports = transformer;
