@@ -1,6 +1,8 @@
 const constants = require('../constants');
 const { lowerFirstChar } = require('../util');
 
+const ContextVariable = `'ctx`;
+
 const typeTransformers = {
   [constants.PolymorphicVariant]: transformPolymorphicVariant,
   [constants.InputObject]: transformInputObject,
@@ -29,14 +31,17 @@ function transformPolymorphicVariant(node) {
   };
 }
 
-function unwrapNamedNode(node) {
+function unwrapNamedNode(node, namedNodes) {
   if (node.kind === constants.PolymorphicVariant) {
     // we want to accurately cast the types so variants are strings
     // until the helper methods are used to cast them.
     return 'string';
   }
-  // return a reference to the type we will create elsewhere.
-  return lowerFirstChar(node.name);
+
+  const nodeType = namedNodes[node.name];
+  return nodeType && nodeType.internalType ?
+    nodeType.internalType :
+    lowerFirstChar(node.name);
 }
 
 function resolveInputFieldType(node, namedNodes) {
@@ -61,6 +66,8 @@ function resolveInputFieldType(node, namedNodes) {
 
 function resolveProperty(node, namedNodes) {
   const reasonType = resolveInputFieldType(node, namedNodes);
+
+
   // XXX: Lists are easier to use so we chose them over an array.
   const concreteType = node.list ? `list(${reasonType})` : reasonType;
   // TODO: Use option somehow instead of nullable
@@ -68,11 +75,7 @@ function resolveProperty(node, namedNodes) {
 }
 
 function resolveArguments(node, namedNodes) {
-  if (!node.arguments || node.arguments.length === 0) {
-    return 'unit';
-  }
-
-  const args = node.arguments
+  const args = (node.arguments || [])
     .map(argument => {
       const typeSignature = resolveProperty(argument.type, namedNodes);
       // Even if argument is optional reasonml must handle it.
@@ -80,23 +83,16 @@ function resolveArguments(node, namedNodes) {
         argument.name
       }:${typeSignature}`;
     })
-    .join(', ');
 
-  return `(${args})`;
+  args.push(ContextVariable);
+
+  return `(${args.join(', ')})`;
 }
 
 function resolveMethod(node, externalTypes, namedNodes) {
-  const definedType = node.returnType ?
+  const type = node.returnType ?
     resolveProperty(node.returnType, namedNodes) :
     resolveProperty(node, namedNodes);
-
-  /* super hacky rework the string back into it's original form for a lookup */
-  const uppercased = definedType[0].toUpperCase() + definedType.slice(1);
-  const nodeType = namedNodes[uppercased];
-  const type =
-    nodeType && nodeType.internalType ? nodeType.internalType : definedType;
-
-
 
   return `${resolveArguments(node, namedNodes)} => ${type}`;
 }
@@ -151,6 +147,7 @@ function transformObject(node, externalTypes, namedNodes) {
     name: lowerFirstChar(node.name),
     content: `{ . ${flattenObjectFields(node, externalTypes, namedNodes)} }`,
     comment: node.comment,
+    args: [ContextVariable],
   };
 }
 

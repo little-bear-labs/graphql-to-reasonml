@@ -2,13 +2,23 @@ const refmt = require('reason');
 const { lowerFirstChar } = require('../util');
 const constants = require('../constants');
 
+function printTypeArguments(args) {
+  if (!args) {
+    return '';
+  }
+
+  return ` (${args.join(', ')}) `;
+}
+
 function printTypes(nodes) {
   return `
     type ${nodes
-      .map(({ name, content, comment }) => {
+      .map(({ name, content, comment, args }) => {
         return `
         ${comment ? `/* ${comment} */` : ''}
-        ${lowerFirstChar(name)} = ${content}`;
+        ${lowerFirstChar(name)}
+        ${printTypeArguments(args)}
+        = ${content}`;
       })
       .join(' and ')}`;
 

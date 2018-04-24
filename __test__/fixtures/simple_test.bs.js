@@ -28,10 +28,10 @@ var myUser = {
               /* [] */0
             ];
     }),
-  getGender: (function () {
+  getGender: (function (_, _$1) {
       return "foo";
     }),
-  self: (function () {
+  self: (function (_, _$1) {
       return /* Foo */0;
     })
 };

@@ -3,17 +3,21 @@ open Jest;
 [@bs.module "./gen"] external getWrapper : unit => Simple.wrapper = "";
 [@bs.module "./gen"] external getGenderInput: unit => Simple.genderInput = "";
 
-let myUser: Simple.user = {
-  "name": () => "foo",
-  "email": () => "foo",
-  "gender": () => Js.Nullable.return("foo"),
-  "listNullable": () => Js.Nullable.return(["foo"]),
-  "list": () => ["foo"],
+type ctxType = {
+  foo: string,
+};
+
+let myUser: Simple.user(ctxType) = {
+  "name": ctx => "foo",
+  "email": ctx => "foo",
+  "gender": ctx => Js.Nullable.return("foo"),
+  "listNullable": ctx => Js.Nullable.return(["foo"]),
+  "list": ctx => ["foo"],
   /* "getGender": (~check: Js.nullable(Simple.genderInput) = ?) => "foo", */
   "getGender":
     /* Do the check? */
-    (~check) => "foo",
-  "self": (~check) => User.Foo,
+    (~check, ctx) => "foo",
+  "self": (~check, ctx) => User.Foo,
 };
 
 describe("construct types", () => {

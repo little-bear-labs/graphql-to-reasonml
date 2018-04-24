@@ -24,17 +24,17 @@ and genderInput = {
   "wrapper": wrapper,
   "gender": Js.nullable(string),
 }
-and user = {
+and user('ctx) = {
   .
-  "name": unit => string,
-  "email": unit => string,
-  "gender": unit => Js.nullable(string),
-  "listNullable": unit => Js.nullable(list(string)),
-  "list": unit => list(string),
+  "name": 'ctx => string,
+  "email": 'ctx => string,
+  "gender": 'ctx => Js.nullable(string),
+  "listNullable": 'ctx => Js.nullable(list(string)),
+  "list": 'ctx => list(string),
   "getGender":
     /* Do the check? */
-    (~check: Js.nullable(genderInput)) =>
+    (~check: Js.nullable(genderInput), 'ctx) =>
     string,
-  "self": (~check: bool) => User.t,
+  "self": (~check: bool, 'ctx) => User.t,
 }
-and query = {. "user": unit => Js.nullable(user)};
+and query('ctx) = {. "user": 'ctx => Js.nullable(User.t)};

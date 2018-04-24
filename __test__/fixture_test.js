@@ -28,6 +28,7 @@ describe('transformer', () => {
           const transformed = subject(source);
           const reason = reasonTransformer(transformed);
           const printed = reasonPrinter(reason);
+          console.log(printed);
           expect(printed).toEqual(expected);
         });
       });
