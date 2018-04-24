@@ -26,13 +26,14 @@ and genderInput = {
 }
 and user('ctx) = {
   .
-  "name": (__nameArgs, 'ctx) => string,
-  "email": (__emailArgs, 'ctx) => string,
-  "gender": (__genderArgs, 'ctx) => Js.nullable(string),
-  "listNullable": (__listNullableArgs, 'ctx) => Js.nullable(list(string)),
-  "list": (__listArgs, 'ctx) => list(string),
-  "getGender": (__getGenderArgs, 'ctx) => string,
-  "self": (__selfArgs, 'ctx) => User.t,
+  "name": (User.t, __nameArgs, 'ctx) => string,
+  "email": (User.t, __emailArgs, 'ctx) => string,
+  "gender": (User.t, __genderArgs, 'ctx) => Js.nullable(string),
+  "listNullable":
+    (User.t, __listNullableArgs, 'ctx) => Js.nullable(list(string)),
+  "list": (User.t, __listArgs, 'ctx) => list(string),
+  "getGender": (User.t, __getGenderArgs, 'ctx) => string,
+  "self": (User.t, __selfArgs, 'ctx) => User.t,
 }
 /* Arguments for name */
 and __nameArgs = {.}
@@ -51,6 +52,9 @@ and __getGenderArgs = {
 }
 /* Arguments for self */
 and __selfArgs = {. "check": bool}
-and query('ctx) = {. "user": (__userArgs, 'ctx) => Js.nullable(User.t)}
+and query('root, 'ctx) = {
+  .
+  "user": ('root, __userArgs, 'ctx) => Js.nullable(User.t),
+}
 /* Arguments for user */
 and __userArgs = {.};

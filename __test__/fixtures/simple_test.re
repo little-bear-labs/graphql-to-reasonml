@@ -7,18 +7,18 @@ open Jest;
 type ctxType = {foo: string};
 
 let myUser: Simple.user(ctxType) = {
-  "name": (args, ctx) => "foo",
-  "email": (args, ctx) => "foo",
-  "gender": (args, ctx) => Js.Nullable.return("foo"),
-  "listNullable": (args, ctx) => Js.Nullable.return([ctx.foo]),
-  "list": (args, ctx) => ["foo"],
+  "name": (user, args, ctx) => "foo",
+  "email": (user, args, ctx) => "foo",
+  "gender": (user, args, ctx) => Js.Nullable.return("foo"),
+  "listNullable": (user, args, ctx) => Js.Nullable.return([ctx.foo]),
+  "list": (user, args, ctx) => ["foo"],
   /* Do the check? */
-  "getGender": (args, ctx) => {
+  "getGender": (user, args, ctx) => {
     let str = "true?: " ++ Js.String.make(args##check);
     Js.log("sup");
     "foo" ++ ctx.foo;
   },
-  "self": (args, ctx) => User.Foo,
+  "self": (user, args, ctx) => User.Foo,
 };
 
 describe("construct types", () => {

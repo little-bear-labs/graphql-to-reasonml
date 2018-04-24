@@ -7,33 +7,33 @@ var Simple = require("./simple.bs.js");
 var Js_primitive = require("bs-platform/lib/js/js_primitive.js");
 
 var myUser = {
-  name: (function (_, _$1) {
+  name: (function (_, _$1, _$2) {
       return "foo";
     }),
-  email: (function (_, _$1) {
+  email: (function (_, _$1, _$2) {
       return "foo";
     }),
-  gender: (function (_, _$1) {
+  gender: (function (_, _$1, _$2) {
       return "foo";
     }),
-  listNullable: (function (_, ctx) {
+  listNullable: (function (_, _$1, ctx) {
       return /* :: */[
               ctx[/* foo */0],
               /* [] */0
             ];
     }),
-  list: (function (_, _$1) {
+  list: (function (_, _$1, _$2) {
       return /* :: */[
               "foo",
               /* [] */0
             ];
     }),
-  getGender: (function (args, ctx) {
+  getGender: (function (_, args, ctx) {
       "true?: " + String(args.check);
       console.log("sup");
       return "foo" + ctx[/* foo */0];
     }),
-  self: (function (_, _$1) {
+  self: (function (_, _$1, _$2) {
       return /* Foo */0;
     })
 };

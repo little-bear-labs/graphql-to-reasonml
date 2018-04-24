@@ -2,6 +2,7 @@ const constants = require('../constants');
 const { lowerFirstChar } = require('../util');
 
 const ContextVariable = `'ctx`;
+const RootVariable = `'root`;
 
 const typeTransformers = {
   [constants.PolymorphicVariant]: transformPolymorphicVariant,
@@ -73,7 +74,7 @@ function resolveProperty(node, namedNodes) {
   return node.nullable ? `Js.nullable(${concreteType})` : concreteType;
 }
 
-function resolveArguments(node, namedNodes) {
+function resolveArguments(rootVariable, node, namedNodes) {
   const typeArgumentContent = (node.arguments || [])
     .map(argument => {
       const typeSignature = resolveProperty(argument.type, namedNodes);
@@ -92,17 +93,17 @@ function resolveArguments(node, namedNodes) {
   };
 
   return {
-    content: `(${[argumentType.name, ContextVariable].join(', ')})`,
+    content: `(${[rootVariable, argumentType.name, ContextVariable].join(', ')})`,
     type: argumentType,
   };
 }
 
-function resolveMethod(node, externalTypes, namedNodes) {
+function resolveMethod(node, externalTypes, namedNodes, rootVariable) {
   const type = node.returnType
     ? resolveProperty(node.returnType, namedNodes)
     : resolveProperty(node, namedNodes);
 
-  const { content, type: argumentType } = resolveArguments(node, namedNodes);
+  const { content, type: argumentType } = resolveArguments(rootVariable, node, namedNodes);
   return {
     content: `${content} => ${type}`,
     type: argumentType,
@@ -116,8 +117,8 @@ function resolveInputField(node, externalTypes, namedNodes) {
   `;
 }
 
-function resolveObjectField(node, externalTypes, namedNodes) {
-  const { content, type } = resolveMethod(node, externalTypes, namedNodes);
+function resolveObjectField(node, externalTypes, namedNodes, rootVariable) {
+  const { content, type } = resolveMethod(node, externalTypes, namedNodes, rootVariable);
   return {
     content: `
       ${node.comment ? `/* ${node.comment} */` : ''}
@@ -135,9 +136,9 @@ function flattenInputFields(node, externalTypes, namedNodes) {
     .join(', ');
 }
 
-function flattenObjectFields(node, externalTypes, namedNodes) {
+function flattenObjectFields(node, externalTypes, namedNodes, rootVariable) {
   const { contents, types } = node.fields.reduce((sum, node) => {
-    const { content, type } = resolveObjectField(node, externalTypes, namedNodes);
+    const { content, type } = resolveObjectField(node, externalTypes, namedNodes, rootVariable);
     sum.contents.push(content);
     sum.types.push(type);
     return sum;
@@ -167,14 +168,20 @@ function transformObject(node, externalTypes, namedNodes) {
     node,
     externalTypes,
     namedNodes,
+    node.internalType ? node.internalType : RootVariable,
   );
+
+  const args = node.internalType ?
+    [ContextVariable] :
+    [RootVariable, ContextVariable];
+
   return [
     {
       kind: constants.KindType,
       name: lowerFirstChar(node.name),
       content: `{ . ${content} }`,
       comment: node.comment,
-      args: [ContextVariable],
+      args,
     },
     ...types,
   ];
