@@ -2,6 +2,7 @@ const { getLocation, parse } = require('graphql/language');
 const constants = require('./constants');
 
 const RecordDirective = 'bsRecord';
+const SkippedNodeKinds = new Set(['InterfaceTypeDefinition']);
 
 const transformers = {
   EnumTypeDefinition,
@@ -112,13 +113,19 @@ function startAndEndLines(source, loc) {
   return `${start.line}:${start.column} - ${end.line}:${end.column}`;
 }
 
+
 function transform(source) {
   const doc = parse(source);
-  return doc.definitions.map(node => {
+  return doc.definitions.reduce((sum, node) => {
+    if (SkippedNodeKinds.has(node.kind)) {
+      return sum;
+    }
+
     const transformer = transformers[node.kind];
     if (transformer) {
       try {
-        return transformer(node);
+        sum.push(transformer(node));
+        return sum;
       } catch (err) {
         throw new Error(
           `Failed to transform node: (${startAndEndLines(source, node.loc)}) ${
@@ -128,7 +135,7 @@ function transform(source) {
       }
     }
     throw new Error(`Unhandled node type: ${node.kind}`);
-  });
+  }, []);
 }
 
 module.exports = transform;

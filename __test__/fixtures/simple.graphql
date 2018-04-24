@@ -29,7 +29,11 @@ input GenderInput {
   gender: Gender
 }
 
-type User @bsRecord(type: "User.t") {
+interface UserLike {
+  name: String!
+}
+
+type User implements UserLike @bsRecord(type: "User.t")  {
   name: String!
   email: String!
   gender: Gender
