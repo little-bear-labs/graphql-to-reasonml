@@ -7,13 +7,12 @@
     "build": "bsb -make-world",
     "watch": "bsb -make-world -w"
   },
-  "keywords": [
-    "BuckleScript"
-  ],
+  "keywords": ["BuckleScript"],
   "jest": {
-    "testMatch": [
-      "**/__test__/**/*_test*.js"
-    ]
+    "testMatch": ["**/__test__/**/*_test*.js"]
+  },
+  "bin": {
+    "graphql-to-reasonml": "./bin/graphql-to-reasonml"
   },
   "author": "",
   "license": "MIT",

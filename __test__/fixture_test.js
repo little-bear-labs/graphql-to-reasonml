@@ -16,10 +16,6 @@ describe('transformer', () => {
     .forEach(fixture => {
       describe(fixture, () => {
         it('should match re fixture', () => {
-          const expected = fs.readFileSync(
-            __dirname + `/fixtures/${fixture}.re`,
-            'utf8',
-          );
           const raw = fs.readFileSync(
             __dirname + `/fixtures/${fixture}.graphql`,
             'utf8',
@@ -28,7 +24,10 @@ describe('transformer', () => {
           const transformed = subject(source);
           const reason = reasonTransformer(transformed);
           const printed = reasonPrinter(reason);
-          console.log(printed);
+          const expected = fs.readFileSync(
+            __dirname + `/fixtures/${fixture}.re`,
+            'utf8',
+          );
           expect(printed).toEqual(expected);
         });
       });

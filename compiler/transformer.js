@@ -2,7 +2,12 @@ const { getLocation, parse } = require('graphql/language');
 const constants = require('./constants');
 
 const RecordDirective = 'bsRecord';
-const SkippedNodeKinds = new Set(['InterfaceTypeDefinition']);
+const SkippedNodeKinds = new Set([
+  'InterfaceTypeDefinition',
+  'ObjectTypeExtension',
+]);
+const CanExtendNodeKinds = new Set(['ObjectTypeDefinition']);
+const ExtensionNode = 'ObjectTypeExtension';
 
 const transformers = {
   EnumTypeDefinition,
@@ -113,9 +118,39 @@ function startAndEndLines(source, loc) {
   return `${start.line}:${start.column} - ${end.line}:${end.column}`;
 }
 
+function preprocessMerges(node, merges) {
+  if (!CanExtendNodeKinds.has(node.kind)) {
+    return node;
+  }
+
+  const name = extractName(node);
+  const extensions = merges[name];
+  if (!extensions) {
+    return node;
+  }
+
+  const extensionFields = extensions.reduce((sum, extNode) => {
+    return sum.concat(extNode.fields);
+  }, []);
+
+  return {
+    ...node,
+    fields: [...node.fields, ...extensionFields],
+  };
+}
 
 function transform(source) {
   const doc = parse(source);
+  const merges = doc.definitions.reduce((sum, node) => {
+    if (node.kind !== ExtensionNode) {
+      return sum;
+    }
+    const nodeName = extractName(node);
+    sum[nodeName] = sum[nodeName] || [];
+    sum[nodeName].push(node);
+    return sum;
+  }, {});
+
   return doc.definitions.reduce((sum, node) => {
     if (SkippedNodeKinds.has(node.kind)) {
       return sum;
@@ -124,7 +159,7 @@ function transform(source) {
     const transformer = transformers[node.kind];
     if (transformer) {
       try {
-        sum.push(transformer(node));
+        sum.push(transformer(preprocessMerges(node, merges)));
         return sum;
       } catch (err) {
         throw new Error(
