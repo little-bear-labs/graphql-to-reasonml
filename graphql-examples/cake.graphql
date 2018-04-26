@@ -1,0 +1,7 @@
+type Cake @bsType(type: "CakeModule.t") {
+  name: String!
+}
+
+type Query {
+  cake: Cake!
+}
