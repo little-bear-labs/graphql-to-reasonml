@@ -33,7 +33,7 @@ interface UserLike {
   name: String!
 }
 
-type User implements UserLike @bsRecord(type: "User.t")  {
+type User implements UserLike @bsType(type: "User.t") {
   name: String!
   email: String!
   gender: Gender

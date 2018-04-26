@@ -1,0 +1,5 @@
+directive @authorize(roles: [AUTH_ROLES]!) on FIELD_DEFINITION
+
+type Query {
+  foo: String
+}

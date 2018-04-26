@@ -1,10 +1,11 @@
 const { getLocation, parse } = require('graphql/language');
 const constants = require('./constants');
 
-const RecordDirective = 'bsRecord';
+const RecordDirective = 'bsType';
 const SkippedNodeKinds = new Set([
   'InterfaceTypeDefinition',
   'ObjectTypeExtension',
+  'DirectiveDefinition',
 ]);
 const CanExtendNodeKinds = new Set(['ObjectTypeDefinition']);
 const ExtensionNode = 'ObjectTypeExtension';
@@ -13,6 +14,7 @@ const transformers = {
   EnumTypeDefinition,
   ObjectTypeDefinition,
   InputObjectTypeDefinition,
+  ScalarTypeDefinition,
 };
 
 function extractComment(node) {
@@ -109,6 +111,14 @@ function EnumTypeDefinition(node) {
         comment: extractComment(variant),
       };
     }),
+  };
+}
+
+function ScalarTypeDefinition(node) {
+  return {
+    kind: constants.ScalarTypeDefinition,
+    name: extractName(node),
+    internalType: extractInternalType(node),
   };
 }
 

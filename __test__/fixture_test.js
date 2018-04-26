@@ -28,7 +28,7 @@ describe('transformer', () => {
             __dirname + `/fixtures/${fixture}.re`,
             'utf8',
           );
-          expect(printed).toEqual(expected);
+          expect(printed.trim()).toEqual(expected.trim());
         });
       });
     });

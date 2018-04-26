@@ -1,0 +1,8 @@
+scalar JSON @bsType(type: "Js.Json.t")
+
+scalar DateTime @bsType(type: "float")
+
+type Query {
+  json: JSON!
+  dateTime: DateTime!
+}

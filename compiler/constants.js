@@ -5,6 +5,7 @@ const Object = 'Object';
 const InputObject = 'InputObject';
 const ObjectProperty = 'ObjectProperty';
 const ObjectMethod = 'ObjectMethod';
+const ScalarTypeDefinition = 'ScalarTypeDefinition';
 const KindType = 'Type';
 const KindVariant = 'Variant';
 
